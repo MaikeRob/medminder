@@ -3,13 +3,7 @@ import { StyleSheet, View, FlatList } from 'react-native';
 import Header from '../../components/Header';
 import Medication from '../../components/Medication';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const medications = [
-  { id: '1', name: 'Xarope', type: 'xarope' },
-  { id: '2', name: 'Dipirona', type: 'gotejamento' },
-  { id: '3', name: 'Omeprazol', type: 'pilula' },
-  { id: '4', name: 'Metilcobalamina', type: 'injecao' },
-];
+import medications from "../../data/data.json";
 
 export default function App() {
   return (

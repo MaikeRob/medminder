@@ -1,18 +1,38 @@
-import React, { useState } from 'react';
-import { View, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, FlatList, StyleSheet } from 'react-native';
 import { ScheduleItem } from '../../components/ScheduleItem';
-import  Header  from '../../components/Header';
- 
-export default function SchedulesScreen() {
-  const [schedules, setSchedules] = useState([
-    { id: '1', time: '08:00', name: 'Paracetamol', checked: false },
-    { id: '2', time: '12:00', name: 'Ibuprofeno', checked: true },
-    { id: '3', time: '18:00', name: 'Amoxicilina', checked: false },
-  ]);
+import Header from '../../components/Header';
+import medications from "../../data/data.json";
 
-  const toggleChecked = (id: string) => {
-    setSchedules((prev) =>
-      prev.map((item) =>
+interface Schedule {
+  id: number;
+  name: string;
+  day: string;
+  time: string;
+  checked: boolean;
+}
+
+export default function SchedulesScreen() {
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+
+  useEffect(() => {
+    const data: Schedule[] = medications.flatMap(med =>
+      med.schedules.map(schedule => ({
+        id: schedule.id,
+        name: med.name,
+        day: schedule.day,
+        time: schedule.time,
+        checked: schedule.checked ?? false
+      }))
+    );
+
+    console.log(data);
+    setSchedules(data);
+  }, []);
+
+  const toggleChecked = (id: number) => {
+    setSchedules(prev =>
+      prev.map(item =>
         item.id === id ? { ...item, checked: !item.checked } : item
       )
     );
@@ -20,19 +40,26 @@ export default function SchedulesScreen() {
 
   return (
     <>
-    <Header text="Lista"/>
-    <FlatList
-      data={schedules}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <ScheduleItem
-          time={item.time}
-          name={item.name}
-          checked={item.checked}
-          onToggle={() => toggleChecked(item.id)}
-        />
-      )}
-    />
+      <Header text="Lembretes" />
+      <FlatList
+        data={schedules}
+        style={styles.flatList} // Estilo aplicado para criar margem superior
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <ScheduleItem
+            time={item.time}
+            name={item.name}
+            checked={item.checked}
+            onToggle={() => toggleChecked(item.id)}
+          />
+        )}
+      />
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  flatList: {
+    marginTop: 60, // Ajuste o valor conforme necessário
+  },
+});
