@@ -4,19 +4,21 @@ import Header from '../../components/Header';
 import Medication from '../../components/Medication';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import medications from "../../data/data.json";
+import { MedicationProvider } from '@/contexts/MedicationContext';
 
 export default function App() {
+
   return (
     <SafeAreaView style={styles.container}>
-      <Header text="Medicamentos" button />
-      <FlatList
-        data={medications}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Medication name={item.name} type={item.type as any} />
-        )}
-        contentContainerStyle={styles.listContent}
-      />
+        <Header text="Medicamentos" button />
+        <FlatList
+          data={medications}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <Medication medicationObject={item} />
+          )}
+          contentContainerStyle={styles.listContent}
+        />
     </SafeAreaView>
   );
 }

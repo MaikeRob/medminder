@@ -5,7 +5,7 @@ import Header from '../../components/Header';
 import medications from "../../data/data.json";
 
 interface Schedule {
-  id: number;
+  id: string;
   name: string;
   day: string;
   time: string;
@@ -26,11 +26,10 @@ export default function SchedulesScreen() {
       }))
     );
 
-    console.log(data);
     setSchedules(data);
   }, []);
 
-  const toggleChecked = (id: number) => {
+  const toggleChecked = (id: string) => {
     setSchedules(prev =>
       prev.map(item =>
         item.id === id ? { ...item, checked: !item.checked } : item
