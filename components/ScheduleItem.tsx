@@ -1,22 +1,78 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { FrequencyType } from '../interfaces';
 
 type ScheduleItemProps = {
   time: string;
   name: string;
+  frequency: FrequencyType;
+  selectedDays: boolean[];
+  dayOfMonth?: number;
   checked: boolean;
   onToggle: () => void;
+  now?: Date;
 };
 
-export function ScheduleItem({ time, name, checked, onToggle }: ScheduleItemProps) {
+const DAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+export function ScheduleItem({ 
+  time, 
+  name, 
+  frequency, 
+  selectedDays, 
+  dayOfMonth,
+  checked, 
+  onToggle,
+  now
+}: ScheduleItemProps) {
+  const getFrequencyText = () => {
+    switch (frequency) {
+      case 'daily':
+        return 'Diário';
+      case 'weekly':
+        return 'Semanal';
+      case 'monthly':
+        return `Mensal (dia ${dayOfMonth || 1})`;
+      default:
+        return '';
+    }
+  };
+
+  const getActiveDaysText = () => {
+    const activeDays = selectedDays
+      .map((selected, index) => selected ? DAYS[index] : null)
+      .filter(day => day !== null);
+    
+    if (activeDays.length === 7) return 'Todos os dias';
+    if (activeDays.length === 5 && !selectedDays[5] && !selectedDays[6]) return 'Seg-Sex';
+    if (activeDays.length === 2 && selectedDays[5] && selectedDays[6]) return 'Fim de semana';
+    return activeDays.join(', ');
+  };
+
+  let isPast = false;
+  if (now && !checked) {
+    const [h, m] = time.split(':').map(Number);
+    const itemDate = new Date(now);
+    itemDate.setHours(h, m, 0, 0);
+    isPast = now.getTime() > itemDate.getTime();
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.time}>{time}</Text>
+    <View style={[styles.container, isPast && styles.pastContainer]}>
+      <View style={styles.timeContainer}>
+        <Text style={styles.time}>{time}</Text>
+        <Text style={styles.frequency}>{getFrequencyText()}</Text>
+      </View>
       <TouchableOpacity onPress={onToggle} style={styles.checkboxContainer} activeOpacity={0.7}>
         <View style={[styles.checkbox, checked && styles.checkboxChecked]}>
           {checked && <View style={styles.checkboxInner} />}
         </View>
-        <Text style={styles.name}>{name}</Text>
+        <View style={styles.medicationInfo}>
+          <Text style={styles.name}>{name}</Text>
+          {frequency === 'weekly' && (
+            <Text style={styles.days}>{getActiveDaysText()}</Text>
+          )}
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -34,13 +90,25 @@ const styles = StyleSheet.create({
     borderColor: '#E0E0E0',
     backgroundColor: '#fff',
   },
+  pastContainer: {
+    backgroundColor: '#ffeaea',
+  },
+  timeContainer: {
+    width: 80,
+    alignItems: 'flex-end',
+    marginRight: 16,
+  },
   time: {
-    width: 72,
     fontSize: 16,
     color: '#333',
     fontWeight: '500',
     textAlign: 'right',
-    marginRight: 16,
+  },
+  frequency: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'right',
+    marginTop: 2,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -73,9 +141,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 2,
   },
+  medicationInfo: {
+    flex: 1,
+  },
   name: {
     fontSize: 16,
     color: '#222',
     fontWeight: '500',
+  },
+  days: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
   },
 });

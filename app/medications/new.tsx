@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -10,41 +10,30 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { ScheduleConfig } from '../../components/ScheduleConfig';
 import { MedicationType, FrequencyType, Schedule } from '@/interfaces';
 import { medicationService } from '../../data/medicationService';
 
-export default function MedicationConfig() {
-  const { id } = useLocalSearchParams();
+export default function NewMedication() {
   const router = useRouter();
 
-  // Buscar medicamento diretamente do serviço
-  const medication = medicationService.getMedicationById(id as string);
-
-  const [medicationName, setMedicationName] = useState(medication?.name || '');
-  const [medicationType, setMedicationType] = useState<MedicationType>(medication?.type ? medication.type : 'comprimido');
+  const [medicationName, setMedicationName] = useState('');
+  const [medicationType, setMedicationType] = useState<MedicationType>('comprimido');
+  const [nameError, setNameError] = useState('');
   
   // Estado do horário
   const [schedule, setSchedule] = useState<Schedule>({
-    id: medication?.schedule?.id || Date.now().toString(),
-    medicationId: id as string,
-    time: medication?.schedule?.time || '08:00',
-    selectedDays: medication?.schedule?.selectedDays || [true, true, true, true, true, true, true],
-    frequency: medication?.schedule?.frequency || 'daily',
-    dayOfMonth: medication?.schedule?.dayOfMonth || 1,
-    checked: medication?.schedule?.checked || false,
+    id: Date.now().toString(),
+    medicationId: '',
+    time: '08:00',
+    selectedDays: [true, true, true, true, true, true, true],
+    frequency: 'daily',
+    dayOfMonth: 1,
+    checked: false,
   });
-
-  useEffect(() => {
-    if (medication?.name) {
-      setMedicationName(medication.name);
-    }
-    if (medication?.type) setMedicationType(medication.type);
-    if (medication?.schedule) setSchedule(medication.schedule);
-  }, [medication]);
 
   const handleTimeChange = (time: string) => {
     setSchedule(prev => ({ ...prev, time }));
@@ -62,55 +51,56 @@ export default function MedicationConfig() {
     setSchedule(prev => ({ ...prev, dayOfMonth }));
   };
 
+  const validateForm = () => {
+    // Limpar erro anterior
+    setNameError('');
+    
+    // Validar nome do medicamento
+    if (!medicationName.trim()) {
+      setNameError('O nome do medicamento é obrigatório');
+      return false;
+    }
+    
+    if (medicationName.trim().length < 2) {
+      setNameError('O nome deve ter pelo menos 2 caracteres');
+      return false;
+    }
+    
+    return true;
+  };
+
   const handleSave = () => {
-    const updatedMedication = {
-      id: id as string,
-      name: medicationName,
+    if (!validateForm()) {
+      return;
+    }
+
+    // Gerar ID único para o novo medicamento
+    const newId = Date.now().toString();
+    
+    const newMedication = {
+      id: newId,
+      name: medicationName.trim(),
       type: medicationType,
       schedule: {
         ...schedule,
-        medicationId: id as string,
+        id: Date.now().toString(),
+        medicationId: newId,
       },
     };
     
     // Salvar usando o serviço
-    medicationService.saveMedication(updatedMedication);
-    console.log('Medicamento salvo:', updatedMedication);
+    medicationService.saveMedication(newMedication);
+    console.log('Novo medicamento salvo:', newMedication);
     
-    // Voltar para a tela anterior
-    router.back();
-  };
-
-  const handleDelete = () => {
+    // Mostrar confirmação
     Alert.alert(
-      'Excluir Medicamento',
-      `Tem certeza que deseja excluir "${medicationName}"? Esta ação não pode ser desfeita.`,
+      'Sucesso',
+      'Medicamento adicionado com sucesso!',
       [
         {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Excluir',
-          style: 'destructive',
-          onPress: () => {
-            // Excluir o medicamento
-            medicationService.deleteMedication(id as string);
-            console.log('Medicamento excluído:', id);
-            
-            // Mostrar confirmação e voltar
-            Alert.alert(
-              'Medicamento Excluído',
-              'O medicamento foi excluído com sucesso.',
-              [
-                {
-                  text: 'OK',
-                  onPress: () => router.back()
-                }
-              ]
-            );
-          },
-        },
+          text: 'OK',
+          onPress: () => router.back()
+        }
       ]
     );
   };
@@ -123,7 +113,7 @@ export default function MedicationConfig() {
           <TouchableOpacity onPress={() => router.back()}>
             <MaterialIcons name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Configurar Medicamento</Text>
+          <Text style={styles.headerTitle}>Adicionar Medicamento</Text>
           <View style={{ width: 24 }} />
         </View>
 
@@ -131,12 +121,16 @@ export default function MedicationConfig() {
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Nome:</Text>
           <TextInput
-            style={styles.textInput}
+            style={[styles.textInput, nameError ? styles.textInputError : null]}
             value={medicationName}
-            onChangeText={setMedicationName}
+            onChangeText={(text) => {
+              setMedicationName(text);
+              if (nameError) setNameError(''); // Limpar erro quando usuário digita
+            }}
             placeholder="Digite o nome do medicamento"
           />
         </View>
+        {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
 
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Tipo:</Text>
@@ -170,16 +164,7 @@ export default function MedicationConfig() {
 
         {/* Botão de salvar */}
         <View style={styles.saveButtonContainer}>
-          <Button title="Salvar alterações" onPress={handleSave} />
-        </View>
-
-        {/* Botão de excluir */}
-        <View style={styles.deleteButtonContainer}>
-          <Button 
-            title="Excluir Medicamento" 
-            onPress={handleDelete}
-            color="#ff0000"
-          />
+          <Button title="Adicionar Medicamento" onPress={handleSave} />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -228,6 +213,16 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     fontSize: 16,
   },
+  textInputError: {
+    borderColor: '#ff0000',
+  },
+  errorText: {
+    color: '#ff0000',
+    fontSize: 12,
+    marginLeft: 96, // Alinhar com o campo de input
+    marginTop: -5,
+    marginBottom: 5,
+  },
   pickerContainer: {
     flex: 1,
     borderWidth: 1,
@@ -242,9 +237,4 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     paddingHorizontal: 16,
   },
-  deleteButtonContainer: {
-    marginVertical: 10,
-    paddingHorizontal: 16,
-    marginBottom: 30,
-  },
-});
+}); 

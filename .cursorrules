@@ -1,0 +1,12 @@
+# Regras do Cursor para o projeto MedMinder
+
+## Análise Baseada em Fatos Concretos
+
+Antes de executar qualquer ação, você DEVE:
+
+1. **Analisar o ambiente atual** - Examinar a estrutura de arquivos, dependências, configurações e estado atual do projeto
+2. **Coletar informações concretas** - Usar ferramentas disponíveis para obter dados reais sobre o código, erros, dependências e configurações
+3. **Tomar decisões baseadas apenas em fatos** - Não fazer suposições ou assumir conhecimento sobre o projeto
+4. **Verificar evidências** - Sempre confirmar informações através de leitura de arquivos, análise de código ou execução de comandos quando necessário
+
+**IMPORTANTE**: Nunca assuma conhecimento sobre o projeto. Sempre analise o ambiente atual e tome decisões baseadas em informações concretas e verificáveis. 

@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    zIndex: 1000, // Garante que fique sobreposto
-    elevation: 4, // Para Android: adiciona sombra
+    zIndex: 1000,
+    elevation: 4,
   },
   title: {
     fontSize: 20,

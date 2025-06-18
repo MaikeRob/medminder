@@ -1,0 +1,58 @@
+[
+    {
+        "id": "1",
+        "name": "Paracetamol",
+        "type": "comprimido",
+        "schedule": {
+            "id": "1",
+            "medicationId": "1",
+            "time": "17:00",
+            "selectedDays": [true, true, true, true, true, true, true],
+            "frequency": "daily",
+            "dayOfMonth": 1,
+            "checked": false
+        }
+    },
+    {
+        "id": "2",
+        "name": "Vitamina D",
+        "type": "injecao",
+        "schedule": {
+            "id": "2",
+            "medicationId": "2",
+            "time": "12:00",
+            "selectedDays": [false, true, false, true, false, true, false],
+            "frequency": "weekly",
+            "dayOfMonth": 1,
+            "checked": true
+        }
+    },
+    {
+        "id": "3",
+        "name": "Suplemento Mensal",
+        "type": "comprimido",
+        "schedule": {
+            "id": "3",
+            "medicationId": "3",
+            "time": "09:00",
+            "selectedDays": [false, false, false, false, false, false, false],
+            "frequency": "monthly",
+            "dayOfMonth": 15,
+            "checked": false
+        }
+    },
+    {
+        "id": "4",
+        "name": "Aspirina",
+        "type": "comprimido",
+        "schedule": {
+            "id": "4",
+            "medicationId": "4",
+            "time": "20:00",
+            "selectedDays": [true, true, true, true, true, false, false],
+            "frequency": "weekly",
+            "dayOfMonth": 1,
+            "checked": false
+        }
+    }
+]

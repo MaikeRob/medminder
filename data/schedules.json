@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "medicationId": "1",
+    "medicationName": "Paracetamol",
+    "time": "08:00",
+    "selectedDays": [true, true, true, true, true, true, true],
+    "frequency": "daily",
+    "dayOfMonth": 1,
+    "checked": false
+  },
+  {
+    "id": "2",
+    "medicationId": "2",
+    "medicationName": "Vitamina D",
+    "time": "12:00",
+    "selectedDays": [false, true, false, true, false, true, false],
+    "frequency": "weekly",
+    "dayOfMonth": 1,
+    "checked": true
+  },
+  {
+    "id": "3",
+    "medicationId": "3",
+    "medicationName": "Suplemento Mensal",
+    "time": "09:00",
+    "selectedDays": [false, false, false, false, false, false, false],
+    "frequency": "monthly",
+    "dayOfMonth": 15,
+    "checked": false
+  },
+  {
+    "id": "4",
+    "medicationId": "4",
+    "medicationName": "Aspirina",
+    "time": "20:00",
+    "selectedDays": [true, true, true, true, true, false, false],
+    "frequency": "weekly",
+    "dayOfMonth": 1,
+    "checked": false
+  }
+] 
